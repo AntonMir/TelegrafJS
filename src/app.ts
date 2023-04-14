@@ -5,6 +5,7 @@ import { IBotContext } from "./context/context.interface";
 import { Command } from "./commands/command.class";
 import { StartCommand } from "./commands/start.command";
 import LocalSession from "telegraf-session-local";
+import { MessageCommand } from "./commands/message.command";
 
 class Bot {
     bot: Telegraf<IBotContext>; //пустая переменная для бота и его тип, с которым будет работать юхер
@@ -23,7 +24,8 @@ class Bot {
 
         // сюда добавляем новые команды для выполнения ботом
         this.commands = [
-            new StartCommand(this.bot)
+            new StartCommand(this.bot),
+            new MessageCommand(this.bot)
         ]
 
         // пробегаемся циклом по всем командами и вызываем их скрипт (описан в handler у каждого)

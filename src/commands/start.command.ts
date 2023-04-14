@@ -10,26 +10,28 @@ export class StartCommand extends Command {
     constructor(bot: Telegraf<IBotContext>) {
         super(bot)
     }
+    
     handle(): void {
         this.bot.start(ctx => {
             console.log(ctx.session)
             ctx.reply(
                 "Приветствую тебя дорогой друг!",
                 Markup.inlineKeyboard([
-                    Markup.button.callback("Привет!", "start_greeting_answer_good"),
-                    Markup.button.callback("Кто ты такой?", "start_greeting_answer_bad"),
+                    Markup.button.callback("Привет!", "start_hello"),
+                    Markup.button.callback("Кто ты такой?", "start_who_are_you"),
                 ])
             )
         })
 
-        this.bot.action('start_greeting_answer_good', ctx => {
+        this.bot.action('start_hello', ctx => {
             // ctx.session.isLike = true
             ctx.editMessageText("Окей")
         })
-        this.bot.action('start_greeting_answer_bad', ctx => {
+        this.bot.action('start_who_are_you', ctx => {
             // ctx.session.isLike = false
-            ctx.editMessageText("Печаль")
-        })
+            ctx.editMessageText("Заменяем старый текст")
+            ctx.sendMessage('пишем новый текст')
+         })
 
     }
 }
