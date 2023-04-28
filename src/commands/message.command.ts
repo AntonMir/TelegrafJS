@@ -1,11 +1,15 @@
+/**
+ * Миддлвара
+ * Тип данных для сообщения (message.text)
+ * Отправка сообщения
+ */
+
 import { Markup, Telegraf } from "telegraf";
 import { Command } from "./command.class";
-import { IBotContext } from "../context/context.interface";
+import { IBotContext } from "../Context/context.interface";
 import { Message } from 'typegram'
 
-/**
- * Скрипт на любой текст
- */
+
 export class MessageCommand extends Command {
 
     constructor(bot: Telegraf<IBotContext>) {
@@ -14,21 +18,18 @@ export class MessageCommand extends Command {
 
     handle(): void {
 
-        this.bot.use(ctx => {
-            const message = ctx.message as Message.TextMessage
+        this.bot.use((ctx, next) => {
+            const message = ctx.message as Message.TextMessage // Message.TextMessage - тип данных для доступа к message.txt
             const editedMessage = ctx.editedMessage as Message.TextMessage
 
             if(message) {
-                ctx.sendMessage(`It's a message: ${message.text}`)
-                .then(data => {
-                    console.log(data)
-                })
-
-                return 
+                ctx.sendMessage(`It's a message: ${message.text}`) // отправка текста
+                return next()
             }
 
             if(editedMessage) {
-                return ctx.sendMessage(editedMessage.text)
+                ctx.sendMessage(editedMessage.text)
+                return next()
             }
             
         })

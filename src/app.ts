@@ -1,41 +1,71 @@
-import { Telegraf } from "telegraf";
-import { IConfigService } from "./config/config.interface";
-import { ConfigService } from "./config/config.service";
-import { IBotContext } from "./context/context.interface";
-import { Command } from "./commands/command.class";
-import { StartCommand } from "./commands/start.command";
-import LocalSession from "telegraf-session-local";
-import { MessageCommand } from "./commands/message.command";
+import { ConfigService } from "./Config/config.service";
+import { BaseBot } from './Bots/base.bot'
+import { SubscriptionBot } from "./Bots/subscription.bot";
+import { Telegraf, Input } from "telegraf";
+import { GetUpdateContent, NarrowedContext, Context } from "telegraf/typings/context";
+import { Update } from "typegram";
+import path from 'path'
 
-class Bot {
-    bot: Telegraf<IBotContext>; //пустая переменная для бота и его тип, с которым будет работать юхер
-    commands: Command[] =[] //массив BOT-команд, которые будет выполняться до bot.launch
 
-    constructor(private readonly configService: IConfigService) {
-        // забираем конфиг из .env и инициализируем бота
-        this.bot = new Telegraf<IBotContext>(this.configService.get("TOKEN"))
-        
-        // записываем все наши действия в sessions.json
-        this.bot.use((new LocalSession({database: 'sessions.json'})).middleware())
-    }
+// Бот для изучения основ
+// const bot = new BaseBot(new ConfigService())
+// bot.init()
 
-    // инициализация бота
-    init() {
+// const photo = '../storageItems/5QDoon59tEqxsSvKd.jpeg'
 
-        // сюда добавляем новые команды для выполнения ботом
-        this.commands = [
-            new StartCommand(this.bot),
-            new MessageCommand(this.bot)
-        ]
+// Бот для тестирования подписок и отписок на канал
+// const bot = new SubscriptionBot(new ConfigService())
+const bot = new Telegraf("5929680355:AAGpCkWNCq-bFhCbXjfmikIGYWu3GFnz5GQ")
+bot.start( (ctx, next) => {
+    // await ctx.telegram.sendMessage(ctx.chat.id, 'messageee')
+    // // ctx.telegram.sendPhoto(ctx.chat.id, Input.fromLocalFile(photo)).catch(e => console.log(e))
+    // await ctx.replyWithPhoto({source: photo}).catch(e => console.log(e))
+    ctx.replyWithPhoto({ source: path.join(process.cwd(), 'storageItems', 'cat.jpeg')})
+    next()
+})
 
-        // пробегаемся циклом по всем командами и вызываем их скрипт (описан в handler у каждого)
-        for(const command of this.commands) {
-            command.handle()
-        }
-        this.bot.launch()
-    }
+bot.use(ctx => ctx.replyWithVideo({ source: path.join(process.cwd(), 'storageItems', 'sample-10s.mp4')}))
 
-}
+bot.hears('/pic', ctx=> {
+    // bot.telegram.sendPhoto(ctx.chat.id,
+    //   {url: photo},
+    //   {caption: "Hello"}
+    // );
+    // ctx.sendPhoto(photo, {caption: "I'm a bot!"});
 
-const bot = new Bot(new ConfigService())
-bot.init()
+
+
+    // const result = StorageItems.findOne({_id: '5QDoon59tEqxsSvKd'})
+    ctx.replyWithPhoto({ source: path.join(process.cwd(), 'storageItems', 'cat.jpeg')})
+    ctx.replyWithVideo({ source: path.join(process.cwd(), 'storageItems', 'sample-10s.mp4')})
+
+});
+// bot.on('chat_member', async (ctx) => {
+    // console.log('from', ctx.update.chat_member.from)
+    // console.log('chat', ctx.update.chat_member.chat)
+    // console.log('old_chat_member', ctx.update.chat_member.old_chat_member)
+    // console.log('new_chat_member', ctx.update.chat_member.new_chat_member)
+
+    // const chat = await ctx.telegram.getChat(ctx.update.chat_member.chat.id)
+
+
+   
+// })
+// bot.use(ctx => {
+//     console.log(ctx)
+// })
+bot.launch({
+    // allowedUpdates: ["callback_query", 'message', 'chat_member']
+})
+
+
+// chat_member: {
+//     chat: [Object],
+//     from: [Object],
+//     date: 1681824490,
+//     old_chat_member: [Object],
+//     new_chat_member: [Object]
+//   }
+
+
+
